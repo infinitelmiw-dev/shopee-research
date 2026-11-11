@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#193d32">
+  <title>商品リサーチ | Shopee Research</title>
+  <link rel="stylesheet" href="./style.css?v=3">
+  <script defer src="./calculator.js?v=3"></script>
+  <script defer src="./app.js?v=3"></script>
+</head>
+<body>
+  <header><div class="brand"><span class="brand-icon" aria-hidden="true">S</span><span>Shopee Research<small>商品リサーチノート</small></span></div><span class="local-badge">外部APIなし</span></header>
+  <main>
+    <p id="startup-message" class="notice" role="alert">計算機能を準備中です。この表示が消えない場合は再読み込みしてください。利益計算はまだ実行されていません。</p>
+    <noscript><p class="notice">利益計算にはJavaScriptを有効にしてください。費用の入力欄は下に表示しています。</p></noscript>
+    <div class="intro"><p class="eyebrow">PRODUCT RESEARCH</p><h1>仕入れ前に、利益を見える化。</h1><p>販売価格と費用を入力して、商品の採用を判断しましょう。<a href="#result-heading">結果を見る ↓</a></p></div>
+    <section class="draft-panel" aria-label="商品入力の保存と再開">
+      <p id="draft-message" role="status">商品入力はこのブラウザに自動保存されます。</p>
+      <div class="draft-actions"><button id="resume-input" type="button" class="secondary" hidden>最後の入力欄に戻る</button><button id="new-product" type="button" class="secondary">新しい商品を調べる</button></div>
+      <p class="hint">復元できるのは同じブラウザ・保存領域のみです。プレビューのURL（ドメイン・通信方式・ポート）や保存領域が変わる場合、シークレットモードの終了・閲覧データの削除後は復元を保証できません。</p>
+    </section>
+    <div class="layout">
+      <div class="inputs">
+        <section class="card" aria-labelledby="product-heading">
+          <div class="section-heading"><span class="step">01</span><h2 id="product-heading">商品・販売価格</h2></div>
+          <label for="product-url">商品URL <span class="optional">任意</span></label>
+          <input id="product-url" type="url" inputmode="url" placeholder="https://shopee…" autocomplete="off">
+          <p class="hint">URLはメモ用です。商品情報の自動取得は行いません。</p>
+          <div class="two-columns"><div><label for="sale">想定販売価格</label><div class="with-unit"><input id="sale" inputmode="decimal" placeholder="未入力" autocomplete="off"><span id="sale-unit">SGD</span></div></div><div><label for="currency">販売価格の通貨</label><input id="currency" list="currencies" maxlength="3" value="SGD" autocomplete="off" autocapitalize="characters"><datalist id="currencies"><option value="JPY">日本円</option><option value="SGD">シンガポールドル</option><option value="USD">米ドル</option><option value="TWD">台湾ドル</option><option value="THB">タイバーツ</option><option value="MYR">マレーシアリンギット</option><option value="PHP">フィリピンペソ</option><option value="VND">ベトナムドン</option><option value="IDR">インドネシアルピア</option></datalist></div></div>
+          <label for="rate">為替レート <span id="rate-label">1 SGD あたりの日本円</span></label><div class="with-unit"><input id="rate" inputmode="decimal" placeholder="例：115" autocomplete="off"><span>円</span></div>
+          <p class="hint">最新レートを手動で入力してください。JPYは1円で固定します。</p>
+        </section>
+        <section class="card" aria-labelledby="cost-heading">
+          <div class="section-heading"><span class="step">02</span><h2 id="cost-heading">仕入れ・各種費用</h2></div>
+          <div class="notice">不明な費用は空欄のままに。かからない費用には <strong>0</strong> を入力してください。</div>
+          <div id="cost-fields">
+            <div class="cost-row"><label for="purchase">仕入れ価格</label><div class="cost-controls"><input id="purchase" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><span class="fixed-unit">円</span></div></div>
+            <div class="cost-row"><label for="domestic">国内送料</label><div class="cost-controls"><input id="domestic" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><span class="fixed-unit">円</span></div></div>
+            <div class="cost-row"><label for="international">国際送料</label><div class="cost-controls"><input id="international" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><span class="fixed-unit">円</span></div></div>
+            <div class="cost-row"><label for="packaging">梱包費</label><div class="cost-controls"><input id="packaging" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><span class="fixed-unit">円</span></div></div>
+            <div class="cost-row"><label for="selling">販売手数料</label><div class="cost-controls"><input id="selling" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><select id="selling-mode" aria-label="販売手数料の単位"><option value="yen">円</option><option value="percent">%</option></select></div></div>
+            <div class="cost-row"><label for="payment">決済手数料</label><div class="cost-controls"><input id="payment" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><select id="payment-mode" aria-label="決済手数料の単位"><option value="yen">円</option><option value="percent">%</option></select></div></div>
+            <div class="cost-row"><label for="exchange">為替費用</label><div class="cost-controls"><input id="exchange" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><select id="exchange-mode" aria-label="為替費用の単位"><option value="yen">円</option><option value="percent">%</option></select></div></div>
+            <div class="cost-row"><label for="returns">返品損失見込み</label><div class="cost-controls"><input id="returns" inputmode="decimal" placeholder="不明・未入力" autocomplete="off"><select id="returns-mode" aria-label="返品損失見込みの単位"><option value="yen">円</option><option value="percent">%</option></select></div></div>
+          </div>
+          <p class="hint">円額は1商品あたりの日本円。%は円換算した販売価格に対する割合です。返品損失には1商品あたりの期待損失を入力します。</p>
+        </section>
+        <section class="card settings" aria-labelledby="settings-heading">
+          <div class="section-heading"><span class="step">03</span><h2 id="settings-heading">採用基準・設定の保存</h2></div>
+          <p class="hint">両方の基準を満たす商品を「採用候補」と判定します。</p>
+          <div class="two-columns"><div><label for="min-profit">最低利益額</label><div class="with-unit"><input id="min-profit" inputmode="decimal" value="500"><span>円</span></div></div><div><label for="min-margin">最低利益率</label><div class="with-unit"><input id="min-margin" inputmode="decimal" value="20"><span>%</span></div></div></div>
+          <button id="save-settings" type="button">現在の料金・為替・基準を保存</button>
+          <p class="hint">このボタンは、仕入れ価格を除く7項目の費用・単位、販売通貨、為替レート、採用基準を新しい商品の初期設定として保存します。商品URL・販売価格・仕入れ価格を含む現在の全入力は、別に自動保存されます。空欄も未確定のまま保存します。</p>
+          <p id="save-message" role="status" class="save-message">設定はまだ保存されていません。</p>
+        </section>
+      </div>
+      <aside class="result-column"><section class="result card" aria-labelledby="result-heading">
+        <div class="result-top"><h2 id="result-heading">リサーチ結果</h2><span>自動計算</span></div>
+        <div id="verdict" class="verdict pending" role="status">判定保留</div><p id="verdict-description">必要な項目を入力すると判定します。</p>
+        <div class="profit-block"><span>利益額</span><strong id="profit">—<small> 円</small></strong></div>
+        <div class="result-row"><span>利益率</span><strong id="margin">—</strong></div>
+        <div class="result-row"><span>販売価格（円換算）</span><span id="revenue">—</span></div>
+        <div class="result-row"><span>費用合計</span><span id="total">—</span></div>
+        <div id="issues-block"><h3>入力を確認してください</h3><ul id="issues"></ul></div>
+        <details id="breakdown-details" hidden><summary>費用の内訳を見る</summary><div id="breakdown"></div></details>
+        <p class="formula">利益額 = 販売価格 × 為替レート − 費用合計<br>利益率 = 利益額 ÷ 円換算販売価格 × 100<br>表示は小数第2位まで。判定は丸める前の値を使います。</p>
+      </section><p class="result-note">入力した費用に基づく概算です。税金など追加費用がある場合は、対応する費用に含めてください。実際の請求条件を確認して判断しましょう。</p></aside>
+    </div>
+    <footer>SHOPEE RESEARCH <span>データは外部送信されません</span></footer>
+  </main>
+</body>
+</html>
