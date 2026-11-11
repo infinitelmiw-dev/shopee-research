@@ -1,0 +1,20 @@
+{
+  "name": "shopee-research",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node scripts/build-pages.js",
+    "check:public": "node scripts/check-public-files.js",
+    "test:pages": "node tests/pages.test.js",
+    "test": "node --test tests/calculator.test.js",
+    "test:browser": "node tests/browser.test.js && node tests/mobile.test.js && node tests/draft.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

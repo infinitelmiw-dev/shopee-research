@@ -1,0 +1,65 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', headless: true, args: ['--no-sandbox'] });
+try {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const errors = [], external = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:3000/')) external.push(request.url()); });
+  await page.goto('http://127.0.0.1:3000/');
+  await page.waitForSelector('#purchase');
+  assert.equal(await page.locator('#verdict').textContent(), '判定保留');
+  await page.locator('#product-url').fill('https://shopee.sg/example');
+  await page.locator('#sale').fill('100'); await page.locator('#rate').fill('110');
+  for (const [key, value] of Object.entries({ purchase: '5000', domestic: '500', international: '1000', packaging: '100', selling: '10', payment: '3', exchange: '2', returns: '100' })) await page.locator(`#${key}`).fill(value);
+  for (const key of ['selling', 'payment', 'exchange']) await page.locator(`#${key}-mode`).selectOption('percent');
+  assert.equal(await page.locator('#profit').textContent(), '2,650 円');
+  assert.equal(await page.locator('#margin').textContent(), '24.09 %');
+  assert.equal(await page.locator('#verdict').textContent(), '採用候補');
+  await page.locator('#international').fill('');
+  assert.equal(await page.locator('#verdict').textContent(), '判定保留');
+  assert.equal(await page.locator('#profit').textContent(), '— 円');
+  await page.locator('#international').fill('0');
+  assert.equal(await page.locator('#verdict').textContent(), '採用候補');
+  await page.locator('#international').fill('1000');
+  await page.locator('#min-margin').fill('30');
+  assert.equal(await page.locator('#verdict').textContent(), '見送り');
+  await page.locator('#save-settings').click();
+  assert.match(await page.locator('#save-message').textContent(), /保存しました/);
+  await mkdir('artifacts', { recursive: true });
+  await page.screenshot({ path: 'artifacts/mobile.png', fullPage: true });
+  await page.reload(); await page.waitForSelector('#purchase');
+  assert.equal(await page.locator('#international').inputValue(), '1000');
+  assert.equal(await page.locator('#selling-mode').inputValue(), 'percent');
+  assert.equal(await page.locator('#min-margin').inputValue(), '30');
+  assert.equal(await page.locator('#rate').inputValue(), '110');
+  for (const [id, value] of Object.entries({ sale: '100', purchase: '5000', 'product-url': 'https://shopee.sg/example' })) assert.equal(await page.locator(`#${id}`).inputValue(), value);
+  assert.equal(await page.locator('#verdict').textContent(), '見送り');
+  await page.locator('#currency').fill('JPY');
+  assert.equal(await page.locator('#rate').inputValue(), '1');
+  assert.equal(await page.locator('#rate').isDisabled(), true);
+  await page.locator('#currency').fill('USD');
+  assert.equal(await page.locator('#rate').inputValue(), '110');
+  await page.locator('#selling').fill('101');
+  assert.equal(await page.locator('#selling').getAttribute('aria-invalid'), 'true');
+  await page.locator('#save-settings').click();
+  assert.match(await page.locator('#save-message').textContent(), /保存できません/);
+  await page.locator('#selling').fill('');
+  await page.locator('#save-settings').click();
+  await page.reload(); await page.waitForSelector('#purchase');
+  assert.equal(await page.locator('#selling').inputValue(), '');
+  for (const width of [320, 390, 720, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `横はみ出し: ${width}px`);
+  }
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.screenshot({ path: 'artifacts/desktop.png', fullPage: true });
+  // Storage failure must leave calculation usable and report failed persistence.
+  await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('Storage denied'); }; });
+  await page.locator('#save-settings').click();
+  assert.match(await page.locator('#save-message').textContent(), /保存できませんでした/);
+  assert.deepEqual(errors, []); assert.deepEqual(external, []);
+  console.log('PASS: スマホ入力、計算、保留、基準変更、保存・復元、JPY固定、不正値、空欄保存、保存失敗、320〜1280px、外部リクエストなし');
+} finally { await browser.close(); }
