@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export const publicFiles = ['index.html', 'style.css', 'calculator.js', 'app.js'];
+export const publicFiles = ['index.html', 'muse-import.html', 'style.css', 'calculator.js', 'app.js'];
 const root = new URL('../', import.meta.url);
 const output = new URL('../dist/', import.meta.url);
 await mkdir(output, { recursive: true });
