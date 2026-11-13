@@ -1,6 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 const output = new URL('../dist/', import.meta.url);
-const allowed = ['.nojekyll', 'app.js', 'calculator.js', 'index.html', 'style.css'];
+const allowed = ['.nojekyll', 'app.js', 'calculator.js', 'index.html', 'muse-import.html', 'style.css'];
 const names = (await readdir(output)).sort();
 if (JSON.stringify(names) !== JSON.stringify(allowed)) throw new Error('Unexpected Pages payload files');
 const patterns = [
