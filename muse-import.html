@@ -28,7 +28,7 @@ function render(){
  if(sort.value==='price')rows.sort((a,b)=>(b.price??-Infinity)-(a.price??-Infinity)||a.index-b.index);
  count.textContent=rows.length+'件'+(dedupe.checked&&duplicates?'（元データ '+products.length+'件）':'');
  duplicateInfo.textContent=dedupe.checked&&duplicates?'同じ商品名の重複 '+duplicates+'件を非表示にしています。元データは変更していません。':'';
- if(!rows.length){cards.append(el('p','CSV未読み込み'));return}
+ if(!rows.length){cards.append(el('p',products.length?'この条件に合う商品はありません。':'CSV未読み込み'));return}
  for(const p of rows){
   const card=el('article',undefined,'product');card.append(el('h3',p.name));const decisionRow=el('div',undefined,'decision'),decisionLabel=el('label','仕入れ判定'),decisionSelect=el('select');decisionLabel.htmlFor='decision-'+p.index;decisionSelect.id='decision-'+p.index;for(const [value,label] of [['','未判定'],['candidate','仕入れ候補'],['hold','保留'],['reject','見送り']]){const option=el('option',label);option.value=value;decisionSelect.append(option)}decisionSelect.value=decisions[productKey(p)]||'';decisionSelect.addEventListener('change',()=>saveDecision(p,decisionSelect.value));decisionRow.append(decisionLabel,decisionSelect);card.append(decisionRow);
   const m=el('div',undefined,'metrics');
