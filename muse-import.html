@@ -46,7 +46,14 @@ function render(){
   calc.append(fields);const result=el('strong','未確定');calc.append(result,el('p','販売価格×為替×（1－手数料率）－仕入れ－送料。その他の費用・税金は含みません。','hint'));card.append(calc);
   function updateCalculated(){const amount=recalcValue(p);result.textContent=amount===null?'未確定（必要な数値を入力）':Math.round(amount).toLocaleString('ja-JP')+' 円（概算）';}
   updateCalculated();
-  if(p.purchaseNum===null||p.shippingNum===null||p.feeNum===null)card.append(el('p','⚠ 仕入れ・送料・手数料に未確認項目があります。利益は参考値です。','caution'));
+  const csvUnknown=['仕入れ価格','送料','手数料'].filter((_,i)=>[p.purchaseNum,p.shippingNum,p.feeNum][i]===null);
+  const csvStatus=el('p',csvUnknown.length?'⚠ 元CSVの未確認項目：'+csvUnknown.join('・')+'。CSV予想利益は参考値です。':'元CSV：金額は記載されていますが、実費の確認は別途必要です。','caution');
+  card.append(csvStatus);
+  const recalcStatus=el('p',undefined,'hint');
+  calc.append(recalcStatus);
+  const previousUpdate=updateCalculated;
+  updateCalculated=function(){previousUpdate();recalcStatus.textContent=recalcValue(p)===null?'再計算：必要な数値が未入力です。':'再計算：必要な数値は入力済み（仮定を含む）。税金・追加費用は未反映です。';};
+  updateCalculated();
   if(p.verdict)card.append(el('p','CSV判定：'+p.verdict));
   const details=el('details'),summary=el('summary','根拠・注意事項'),note=el('p',p.note||'記載なし');details.append(summary,note);
   if(/^https:\/\/[^\s]+$/i.test(p.url)){const a=el('a','商品URLを開く');a.href=p.url;a.target='_blank';a.rel='noopener noreferrer';details.append(a)}
