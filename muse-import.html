@@ -1,21 +1,24 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CSV商品比較 | Shopee Research</title>
 <style>
-:root{font-family:system-ui,-apple-system,sans-serif;color:#17372f;background:#f4f7f4}*{box-sizing:border-box}body{margin:0}header{background:#193d32;color:white;padding:18px}main{max-width:900px;margin:auto;padding:18px}a{color:#147c65}.panel{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #17372f13}input[type=file]{max-width:100%;padding:12px;border:1px dashed #719688;border-radius:10px}.hint{color:#596b65;font-size:.9rem}.warn{background:#fff4dc;padding:12px;border-radius:8px;font-size:.9rem}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}select{font:inherit;padding:10px;border:1px solid #9bb4a8;border-radius:9px;background:white;color:#17372f}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:14px}.product{border:1px solid #dbe6df;border-radius:14px;padding:16px;background:#fff}.product h3{font-size:1.08rem;margin:0 0 10px;line-height:1.5;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.metric{background:#f3f7f4;border-radius:9px;padding:10px}.metric small{display:block;color:#596b65;margin-bottom:4px}.metric strong{font-size:1.15rem}.flag{display:inline-block;background:#fff0d5;color:#85541a;border-radius:7px;padding:5px 8px;font-size:.82rem}.note{font-size:.88rem;color:#596b65;overflow-wrap:anywhere}.detail{margin-top:12px;border-top:1px solid #e0e9e2;padding-top:10px}summary{cursor:pointer;color:#147c65}.product p{overflow-wrap:anywhere}.caution{color:#a14c1d;font-size:.86rem}.profit{font-weight:750;font-size:1.25rem}.status{font-weight:700}#message{white-space:pre-wrap}
+:root{font-family:system-ui,-apple-system,sans-serif;color:#17372f;background:#f4f7f4}*{box-sizing:border-box}body{margin:0}header{background:#193d32;color:white;padding:18px}main{max-width:900px;margin:auto;padding:18px}a{color:#147c65}.panel{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #17372f13}input[type=file]{max-width:100%;padding:12px;border:1px dashed #719688;border-radius:10px}.hint{color:#596b65;font-size:.9rem}.warn{background:#fff4dc;padding:12px;border-radius:8px;font-size:.9rem}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}select{font:inherit;padding:10px;border:1px solid #9bb4a8;border-radius:9px;background:white;color:#17372f}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:14px}.product{border:1px solid #dbe6df;border-radius:14px;padding:16px;background:#fff}.product h3{font-size:1.08rem;margin:0 0 10px;line-height:1.5;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.metric{background:#f3f7f4;border-radius:9px;padding:10px}.metric small{display:block;color:#596b65;margin-bottom:4px}.metric strong{font-size:1.15rem}.flag{display:inline-block;background:#fff0d5;color:#85541a;border-radius:7px;padding:5px 8px;font-size:.82rem}.note{font-size:.88rem;color:#596b65;overflow-wrap:anywhere}.detail{margin-top:12px;border-top:1px solid #e0e9e2;padding-top:10px}summary{cursor:pointer;color:#147c65}.product p{overflow-wrap:anywhere}.caution{color:#a14c1d;font-size:.86rem}.profit{font-weight:750;font-size:1.25rem}.calc-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}.calc-fields label{display:block;font-size:.86rem;color:#49665a}.calc-fields input{width:100%;margin-top:5px;padding:10px;border:1px solid #aabfb1;border-radius:8px;font:inherit}.recalc{margin-top:12px;padding:12px;border:1px solid #b8d4c3;border-radius:12px;background:#f1f8f3}.recalc strong{display:block;font-size:1.3rem}.status{font-weight:700}#message{white-space:pre-wrap}
 </style></head><body><header><strong>Shopee Research</strong>　CSV商品比較</header><main>
 <p><a href="./index.html">← 利益計算に戻る</a></p>
 <section class="panel"><h1>Muse CSVを読み込む</h1><p>ごまちゃんのCSVを選ぶと、商品をスマホで比較できます。データは端末内で処理し、サーバーには送信しません。</p><input type="file" id="csv" accept=".csv,text/csv"><p id="message" role="status" class="hint">CSVを選んでください。</p></section>
-<section class="panel"><h2>比較結果 <small id="count"></small></h2><p class="warn">⚠ 予想利益・利益率・判定はCSVの推定値です。送料・仕入れ・手数料・為替などの未確認項目があれば確定利益ではありません。利益は再計算していません。</p>
-<div class="toolbar"><label for="sort">並び順</label><select id="sort"><option value="original">CSVの順番</option><option value="profit">予想利益が高い順</option><option value="price">販売価格が高い順</option></select><label><input id="dedupe" type="checkbox" checked> 重複商品をまとめる</label></div><p id="duplicate-info" class="hint"></p><div id="cards" class="products"><p>CSV未読み込み</p></div></section></main>
+<section class="panel"><h2>比較結果 <small id="count"></small></h2><p class="warn">⚠ 予想利益・利益率・判定はCSVの推定値です。送料・仕入れ・手数料・為替などの未確認項目があれば確定利益ではありません。下の再計算は入力した条件だけを反映した概算で、税金や追加費用は含みません。</p>
+<div class="panel" style="background:#edf5ef"><h3>共通の再計算条件</h3><div class="calc-fields"><label>為替（1 SGD＝円）<input id="fx" type="number" min="0.01" step="any" inputmode="decimal" placeholder="例：115"></label><label>販売手数料率（%）<input id="fee-rate" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="例：10"></label></div><p class="hint">空欄のままでは再計算しません。入力値は仮定であり、Shopeeの確定手数料ではありません。</p></div><div class="toolbar"><label for="sort">並び順</label><select id="sort"><option value="original">CSVの順番</option><option value="profit">予想利益が高い順</option><option value="price">販売価格が高い順</option></select><label><input id="dedupe" type="checkbox" checked> 重複商品をまとめる</label></div><p id="duplicate-info" class="hint"></p><div id="cards" class="products"><p>CSV未読み込み</p></div></section></main>
 <script>
 
 'use strict';
 const input=document.getElementById('csv'),message=document.getElementById('message'),count=document.getElementById('count'),cards=document.getElementById('cards'),sort=document.getElementById('sort'),dedupe=document.getElementById('dedupe'),duplicateInfo=document.getElementById('duplicate-info');
-let products=[];
+let products=[];const overrides=new Map();const fx=document.getElementById('fx'),feeRate=document.getElementById('fee-rate');
 function parseCSV(text){const out=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"'){quoted=false}else{cell+=c}}else if(c==='"'){quoted=true}else if(c===','){row.push(cell);cell=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))out.push(row);row=[];cell=''}else{cell+=c}}if(quoted)throw Error('引用符が閉じられていません');row.push(cell);if(row.some(x=>x.trim()))out.push(row);return out}
 function num(s){const v=String(s||'').replace(/[,\s¥円%]/g,'');return /^-?\d+(?:\.\d+)?$/.test(v)?Number(v):null}
 function el(tag,text,cls){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x}
 function metric(parent,label,value,cls){const b=el('div',undefined,'metric');b.append(el('small',label),el('div',value,cls));parent.append(b)}
+function validNumber(v){return v.trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=0?Number(v):null}
+function editableField(parent,label,value,onChange){const wrapper=el('label',label),field=document.createElement('input');field.type='number';field.min='0';field.step='any';field.inputMode='decimal';field.value=value;field.addEventListener('input',()=>onChange(field.value));wrapper.append(field);parent.append(wrapper)}
+function recalcValue(p){const v=overrides.get(p.index)||{};const rate=validNumber(fx.value),fee=validNumber(feeRate.value),purchase=validNumber(v.purchase??(p.purchaseNum===null?'':String(p.purchaseNum))),shipping=validNumber(v.shipping??(p.shippingNum===null?'':String(p.shippingNum)));if(rate===null||rate<=0||fee===null||fee>100||purchase===null||shipping===null||p.price===null)return null;return p.price*rate*(1-fee/100)-purchase-shipping}
 function render(){
  cards.replaceChildren();
  const seen=new Set();let duplicates=0;
@@ -35,6 +38,14 @@ function render(){
   metric(m,'利益率（元CSV）',p.margin||'不明');
   metric(m,'手数料',p.fee||'不明');
   card.append(m);
+  const calc=el('div',undefined,'recalc');calc.append(el('b','再計算（概算）'));
+  const fields=el('div',undefined,'calc-fields');const override=overrides.get(p.index)||{};
+  const set=(key,value)=>{overrides.set(p.index,{...(overrides.get(p.index)||{}),[key]:value});updateCalculated()};
+  editableField(fields,'仕入れ価格（円）',override.purchase??(p.purchaseNum===null?'':String(p.purchaseNum)),v=>set('purchase',v));
+  editableField(fields,'送料（円）',override.shipping??(p.shippingNum===null?'':String(p.shippingNum)),v=>set('shipping',v));
+  calc.append(fields);const result=el('strong','未確定');calc.append(result,el('p','販売価格×為替×（1－手数料率）－仕入れ－送料。その他の費用・税金は含みません。','hint'));card.append(calc);
+  function updateCalculated(){const amount=recalcValue(p);result.textContent=amount===null?'未確定（必要な数値を入力）':Math.round(amount).toLocaleString('ja-JP')+' 円（概算）';}
+  updateCalculated();
   if(p.purchaseNum===null||p.shippingNum===null||p.feeNum===null)card.append(el('p','⚠ 仕入れ・送料・手数料に未確認項目があります。利益は参考値です。','caution'));
   if(p.verdict)card.append(el('p','CSV判定：'+p.verdict));
   const details=el('details'),summary=el('summary','根拠・注意事項'),note=el('p',p.note||'記載なし');details.append(summary,note);
@@ -52,13 +63,13 @@ input.addEventListener('change',async()=>{
   const names=['商品名','Shopee販売価格','国内仕入れ価格','送料','手数料','予想利益','利益率','商品URL','判定','備考'];
   const ix=names.map(s=>header.findIndex(h=>h.includes(s)));
   if(ix.some(i=>i<0))throw Error('CSVの列名が想定と異なります。Museの商品リサーチCSVを選んでください。');
-  products=data.slice(1).filter(r=>r.some(v=>v.trim())).map((r,index)=>{
+  overrides.clear();products=data.slice(1).filter(r=>r.some(v=>v.trim())).map((r,index)=>{
    const v=i=>(r[ix[i]]||'').trim();
    return {index,name:v(0),sale:v(1),price:num(v(1)),purchase:v(2),purchaseNum:num(v(2)),shipping:v(3),shippingNum:num(v(3)),fee:v(4),feeNum:num(v(4)),profitRaw:v(5),profit:num(v(5)),margin:v(6),url:v(7),verdict:v(8),note:v(9)}
   });
   message.textContent=file.name+' を読み込みました。';render();
  }catch(e){products=[];message.textContent='読み込み失敗: '+e.message;render()}
 });
-sort.addEventListener('change',render);dedupe.addEventListener('change',render);render();
+sort.addEventListener('change',render);dedupe.addEventListener('change',render);fx.addEventListener('input',render);feeRate.addEventListener('input',render);render();
 
 </script></body></html>
